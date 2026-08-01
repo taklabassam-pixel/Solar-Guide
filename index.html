@@ -5,31 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>أطلس ودليل الطاقة الشمسية</title>
     
-    <!-- أيقونة المتصفح والشاشة الرئيسية -->
-    <link rel="icon" href="/icon.png" /> <!-- 🟢 سطر إضافي مباشر لتبسيط القراءة على المحاكي -->
-    <!-- استدعاء الصورة المباشرة بدون تقييد أحجام وهمية -->
-    <link rel="icon" type="image/png" href="/icon.png" />
+    <!-- أيقونة المتصفح والشاشة الرئيسية (مسار نسبي يعمل محلياً وعلى GitHub Pages) -->
+    <link rel="icon" type="image/png" href="./icon.png" />
+    <link rel="apple-touch-icon" href="./icon.png" />
 
-    <!-- أيقونة أجهزة أبل والمحاكيات -->
-    <link rel="apple-touch-icon" href="/icon.png" />
-
-    <!-- لضبط ألوان شريط الحالة عند فتح التطبيق على الجوال -->
+    <!-- ضبط ألوان شريط الحالة وتحديث الأوسمة لملائمة المعايير الحديثة -->
     <meta name="theme-color" content="#0f172a" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-<script>
-  // تتبع استدعاء الأيقونة ومعرفة حالتها في الكونسول
-  const iconLink = document.querySelector('link[rel="icon"]');
-  if (iconLink) {
-    const img = new Image();
-    img.src = iconLink.href;
-    img.onload = () => console.log('✅ [Icon Tracker] تم تحميل الأيقونة بنجاح من المسار:', img.src);
-    img.onerror = () => console.error('❌ [Icon Tracker] فشل استدعاء الأيقونة! تحقق من وجود الملف في المسار:', img.src);
-  } else {
-    console.warn('⚠️ [Icon Tracker] لم يتم العثور على وسم <link rel="icon"> في الصفحة!');
-  }
-</script>
 
+    <script>
+      // تتبع استدعاء الأيقونة ومعرفة حالتها في الكونسول
+      window.addEventListener('DOMContentLoaded', () => {
+        const iconLink = document.querySelector('link[rel="icon"]');
+        if (iconLink) {
+          const img = new Image();
+          img.src = iconLink.href;
+          img.onload = () => console.log('✅ [Icon Tracker] تم تحميل الأيقونة بنجاح من المسار:', img.src);
+          img.onerror = () => console.error('❌ [Icon Tracker] فشل استدعاء الأيقونة! تحقق من وجود الملف في المسار:', img.src);
+        } else {
+          console.warn('⚠️ [Icon Tracker] لم يتم العثور على وسم <link rel="icon"> في الصفحة!');
+        }
+      });
+    </script>
   </head>
   <body>
     <div id="root"></div>

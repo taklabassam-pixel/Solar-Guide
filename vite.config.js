@@ -3,6 +3,9 @@ import react from '@vitejs/plugin-react'
 import path from 'path'
 
 export default defineConfig({
+  // 🟢 السطر الإضافي المطلوب لنشر التطبيق بنجاح على GitHub Pages
+  base: '/Solar-Guide/',
+
   plugins: [react()],
   root: process.cwd(),
   server: {
