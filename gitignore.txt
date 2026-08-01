@@ -1,0 +1,16 @@
+# Dependencies (عدم رفع مجلد المكتبات)
+node_modules/
+
+# Production Build (عدم رفع ملفات البناء النهائية)
+dist/
+build/
+
+# Local Environment variables (عدم رفع ملفات المتغيرات السرية)
+.env
+.env.local
+
+# Logs & Cache
+npm-debug.log*
+yarn-debug.log*
+.vscode/
+.DS_Store
