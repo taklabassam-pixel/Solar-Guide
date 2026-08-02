@@ -2,12 +2,16 @@ import React, { useState } from 'react';
 import { INVERTER_PRESETS } from './data/invertersData';
 
 export default function InverterSettingsTab() {
-  const [selectedInverter, setSelectedInverter] = useState(INVERTER_PRESETS[0].id);
+  const [selectedInverter, setSelectedInverter] = useState(INVERTER_PRESETS?.[0]?.id || '');
   const [sysVoltage, setSysVoltage] = useState(48); // 12, 24, 48
   const [batteryType, setBatteryType] = useState('lithium'); // lithium, gel, tubular
 
-  // الحصول على بيانات الإنفرتر المختار
-  const currentPreset = INVERTER_PRESETS.find(p => p.id === selectedInverter) || INVERTER_PRESETS[0];
+  // الحصول على بيانات الإنفرتر المختار بطريقة آمنة
+  const currentPreset = INVERTER_PRESETS?.find(p => p.id === selectedInverter) || INVERTER_PRESETS?.[0] || {};
+  
+  // استخراج الإعدادات بأمان
+  const defaultSettings = currentPreset?.defaultSettings || {};
+  const settingsEntries = Object.entries(defaultSettings);
 
   return (
     <div className="container py-3">
@@ -26,8 +30,8 @@ export default function InverterSettingsTab() {
               onChange={(e) => setSelectedInverter(e.target.value)}
               className="form-select"
             >
-              {INVERTER_PRESETS.map((inv) => (
-                <option key={inv.id} value={inv.id}>{inv.name}</option>
+              {Array.isArray(INVERTER_PRESETS) && INVERTER_PRESETS.map((inv) => (
+                <option key={inv?.id} value={inv?.id}>{inv?.name}</option>
               ))}
             </select>
           </div>
@@ -78,13 +82,13 @@ export default function InverterSettingsTab() {
               </tr>
             </thead>
             <tbody>
-              {Object.keys(currentPreset.defaultSettings).length > 0 ? (
-                Object.entries(currentPreset.defaultSettings).map(([code, item]) => (
+              {settingsEntries.length > 0 ? (
+                settingsEntries.map(([code, item]) => (
                   <tr key={code}>
                     <td className="fw-bold text-center">{code}</td>
-                    <td>{item.name}</td>
-                    <td className="text-primary fw-bold">{item.value}</td>
-                    <td className="text-muted fs-7">{item.desc}</td>
+                    <td>{item?.name || 'غير محدد'}</td>
+                    <td className="text-primary fw-bold">{item?.value || '-'}</td>
+                    <td className="text-muted fs-7">{item?.desc || '-'}</td>
                   </tr>
                 ))
               ) : (

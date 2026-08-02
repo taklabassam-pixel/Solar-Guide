@@ -1370,7 +1370,7 @@ function MainApp() {
                     {openTerm === 'voltage' && (
                       <div className="p-4 border-t border-slate-200/40 dark:border-slate-700/60 space-y-3">
                         <div className={`p-2 rounded-lg border text-center ${darkMode ? 'bg-slate-900 border-slate-700' : 'bg-white border-slate-200'}`}>
-                          <img src="/assets/img/image_voltage.png" alt="الجهد" onError={(e) => handleImageError(e, "ضغط الفولتية ودفعه للشحنات")} className="max-h-48 mx-auto object-contain" />
+                          <img src="./assets/img/image_voltage.png" alt="الجهد" onError={(e) => handleImageError(e, "ضغط الفولتية ودفعه للشحنات")} className="max-h-48 mx-auto object-contain" />
                         </div>
                         <div className="space-y-2 text-xs sm:text-sm leading-relaxed opacity-90">
                           <p>
@@ -1393,7 +1393,7 @@ function MainApp() {
                     {openTerm === 'current' && (
                       <div className="p-4 border-t border-slate-200/40 dark:border-slate-700/60 space-y-3">
                         <div className={`p-2 rounded-lg border text-center ${darkMode ? 'bg-slate-900 border-slate-700' : 'bg-white border-slate-200'}`}>
-                          <img src="/assets/img/image_current.png" alt="التيار" onError={(e) => handleImageError(e, "تدفق الشحنات الكهربائية")} className="max-h-48 mx-auto object-contain" />
+                          <img src="./assets/img/image_current.png" alt="التيار" onError={(e) => handleImageError(e, "تدفق الشحنات الكهربائية")} className="max-h-48 mx-auto object-contain" />
                         </div>
                         <p className="text-xs sm:text-sm leading-relaxed opacity-90">
                           <strong>التشبيه:</strong> كمية الماء المتدفقة فعلياً في الثانية الواحدة داخل السلك.
@@ -1418,7 +1418,7 @@ function MainApp() {
                     {openTerm === 'power' && (
                       <div className="p-4 border-t border-slate-200/40 dark:border-slate-700/60 space-y-3">
                         <div className={`p-2 rounded-lg border text-center ${darkMode ? 'bg-slate-900 border-slate-700' : 'bg-white border-slate-200'}`}>
-                          <img src="/assets/img/image_power.png" alt="القدرة الكهربائية" onError={(e) => handleImageError(e, "حاصل ضرب الجهد في التيار = الشغل المنجز")} className="max-h-48 mx-auto object-contain" />
+                          <img src="./assets/img/image_power.png" alt="القدرة الكهربائية" onError={(e) => handleImageError(e, "حاصل ضرب الجهد في التيار = الشغل المنجز")} className="max-h-48 mx-auto object-contain" />
                         </div>
                         <div className="space-y-2 text-xs sm:text-sm leading-relaxed opacity-90">
                           <p><strong>المفهوم:</strong> القدرة هي معدل استهلاك أو إنتاج الطاقة خلال الزمن (الشغل المنجز).</p>
@@ -1471,7 +1471,7 @@ function MainApp() {
                         {/* حاوية الصورة */}
                         <div className={`p-3 rounded-lg border text-center transition-all ${darkMode ? 'bg-slate-950/80 border-slate-800/80' : 'bg-white border-slate-200/80 shadow-xs'}`}>
                           <img 
-                            src="/assets/img/image_acid_battery.png" 
+                            src="./assets/img/image_acid_battery.png" 
                             alt="بطارية الأسيد السائلة" 
                             onError={(e) => handleImageError(e, "صورة بطارية الأسيد الرصاصية السائلة")} 
                             className="max-h-48 mx-auto object-contain rounded-md hover:scale-[1.02] transition-transform duration-200" 
@@ -1501,7 +1501,7 @@ function MainApp() {
                     {openTerm === 'gel_battery' && (
                       <div className={`p-4 border-t space-y-3 ${darkMode ? 'border-slate-800 bg-blue-950/20' : 'border-slate-100 bg-blue-50/20'}`}>
                         <div className={`p-3 rounded-lg border text-center ${darkMode ? 'bg-slate-950 border-slate-800' : 'bg-white border-blue-200'}`}>
-                          <img src="/assets/img/image_gel_battery.png" alt="بطارية الجل" onError={(e) => handleImageError(e, "صورة بطارية الجل والجل المغلق")} className="w-full h-auto max-h-56 object-contain rounded-md" />
+                          <img src="./assets/img/image_gel_battery.png" alt="بطارية الجل" onError={(e) => handleImageError(e, "صورة بطارية الجل والجل المغلق")} className="w-full h-auto max-h-56 object-contain rounded-md" />
                         </div>
                         <div className={`p-3 rounded-lg text-xs sm:text-sm flex items-center gap-2.5 ${darkMode ? 'bg-blue-950/50 text-blue-200 border border-blue-800/40' : 'bg-blue-100/60 text-blue-900'}`}>
                           <Lightbulb className="w-5 h-5 text-blue-500 shrink-0" />
@@ -1523,7 +1523,7 @@ function MainApp() {
                     {openTerm === 'lithium_battery' && (
                       <div className={`p-4 border-t space-y-3 ${darkMode ? 'border-slate-800 bg-emerald-950/20' : 'border-slate-100 bg-emerald-50/20'}`}>
                         <div className={`p-3 rounded-lg border text-center ${darkMode ? 'bg-slate-950 border-slate-800' : 'bg-white border-emerald-200'}`}>
-                          <img src="/assets/img/image_lithium_battery.png" alt="بطارية الليثيوم" onError={(e) => handleImageError(e, "صورة بطارية الليثيوم LiFePO4")} className="w-full h-auto max-h-56 object-contain rounded-md" />
+                          <img src="./assets/img/image_lithium_battery.png" alt="بطارية الليثيوم" onError={(e) => handleImageError(e, "صورة بطارية الليثيوم LiFePO4")} className="w-full h-auto max-h-56 object-contain rounded-md" />
                         </div>
                         <div className={`p-3 rounded-lg text-xs sm:text-sm flex items-center gap-2.5 ${darkMode ? 'bg-emerald-950/50 text-emerald-200 border border-emerald-800/40' : 'bg-emerald-100/60 text-emerald-900'}`}>
                           <Lightbulb className="w-5 h-5 text-emerald-500 shrink-0" />
@@ -1563,7 +1563,12 @@ function MainApp() {
                     {openTerm === 'mono_panel' && (
                       <div className={`p-4 border-t space-y-3 ${darkMode ? 'border-slate-800 bg-slate-950/50' : 'border-slate-100 bg-slate-50'}`}>
                         <div className={`p-3 rounded-lg border text-center ${darkMode ? 'bg-slate-950 border-slate-800' : 'bg-white border-slate-200'}`}>
-                          <img src="/assets/img/image_mono_panel.png" alt="اللوح أحادي التبلور" onError={(e) => handleImageError(e, "صورة اللوح أحادي التبلور Mono")} className="w-full h-auto max-h-56 object-contain rounded-md" />
+                          <img 
+                          src="./assets/img/image_mono_panel.png" 
+                          alt="اللوح أحادي التبلور" 
+                          onError={(e) => handleImageError(e, "صورة اللوح أحادي التبلور Mono")} 
+                          className="w-full h-auto max-h-56 object-contain rounded-md" 
+                        />
                         </div>
                         <div className={`p-3 rounded-lg text-xs sm:text-sm flex items-center gap-2.5 ${darkMode ? 'bg-slate-800 text-slate-200 border border-slate-700' : 'bg-slate-100 text-slate-900'}`}>
                           <Lightbulb className="w-5 h-5 text-amber-500 shrink-0" />
@@ -1585,7 +1590,11 @@ function MainApp() {
                     {openTerm === 'poly_panel' && (
                       <div className={`p-4 border-t space-y-3 ${darkMode ? 'border-slate-800 bg-blue-950/20' : 'border-slate-100 bg-blue-50/20'}`}>
                         <div className={`p-3 rounded-lg border text-center ${darkMode ? 'bg-slate-950 border-slate-800' : 'bg-white border-blue-200'}`}>
-                          <img src="/assets/img/image_poly_panel.png" alt="اللوح متعدد التبلور" onError={(e) => handleImageError(e, "صورة اللوح متعدد التبلور Poly")} className="w-full h-auto max-h-56 object-contain rounded-md" />
+                          <img src="./assets/img/image_poly_panel.png"
+                          alt="اللوح متعدد التبلور"
+                          onError={(e) => handleImageError(e, "صورة اللوح متعدد التبلور Poly")}
+                          className="w-full h-auto max-h-56 object-contain rounded-md"
+                        />
                         </div>
                         <div className={`p-3 rounded-lg text-xs sm:text-sm flex items-center gap-2.5 ${darkMode ? 'bg-blue-950/50 text-blue-200 border border-blue-800/40' : 'bg-blue-100/60 text-blue-900'}`}>
                           <Lightbulb className="w-5 h-5 text-blue-500 shrink-0" />
@@ -1607,7 +1616,7 @@ function MainApp() {
                     {openTerm === 'flex_panel' && (
                       <div className={`p-4 border-t space-y-3 ${darkMode ? 'border-slate-800 bg-purple-950/20' : 'border-slate-100 bg-purple-50/20'}`}>
                         <div className={`p-3 rounded-lg border text-center ${darkMode ? 'bg-slate-950 border-slate-800' : 'bg-white border-purple-200'}`}>
-                          <img src="/assets/img/image_flexible_panel.png" alt="اللوح المرن" onError={(e) => handleImageError(e, "صورة اللوح المرن Flexible Panel")} className="w-full h-auto max-h-56 object-contain rounded-md" />
+                          <img src="./assets/img/image_flexible_panel.png" alt="اللوح المرن" onError={(e) => handleImageError(e, "صورة اللوح المرن Flexible Panel")} className="w-full h-auto max-h-56 object-contain rounded-md" />
                         </div>
                         <div className={`p-3 rounded-lg text-xs sm:text-sm flex items-center gap-2.5 ${darkMode ? 'bg-purple-950/50 text-purple-200 border border-purple-800/40' : 'bg-purple-100/60 text-purple-900'}`}>
                           <Lightbulb className="w-5 h-5 text-purple-500 shrink-0" />
