@@ -4,34 +4,28 @@ import {
   Zap, Calculator, Battery, Sun, Moon, Wrench, Settings, 
   ChevronLeft, Gauge, Cpu, Activity, ChevronDown, ChevronUp, BatteryCharging,
   Plus, Trash2, RotateCcw, GitMerge, Lightbulb, AlertTriangle, CheckCircle2,
-  Search, Check, FileText
+  Search, Check, FileText, FileCheck
 } from 'lucide-react';
 import './index.css';
  
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
+
+import { CalculatorsHub } from './components/CalculatorsHub';
+import {SolarPanelsCalculator } from './components/SolarPanelsCalculator';
+
 // 🔌 استيراد قاعدة بيانات الإنفرترات المحدثة
 import { invertersData } from './data/invertersData';
-// 📺 قائمة الأجهزة الشائعة للاختيار
-const PRESET_DEVICES = [
-  { name: 'إضاءة LED', watt: 10 },
-  { name: 'شاشة / تلفزيون', watt: 80 },
-  { name: 'مروحة سقف / مكتب', watt: 60 },
-  { name: 'ثلاجة منزلية', watt: 150 },
-  { name: 'فريزر افقي', watt: 200 },
-  { name: 'مكيف 1 طن (Inverter)', watt: 900 },
-  { name: 'راوتر إنترنت', watt: 12 },
-  { name: 'كمبيوتر محمول (Laptop)', watt: 65 },
-  { name: 'مضخة ماء (1 حصان)', watt: 750 },
-  { name: 'جهاز مخصص (يدوي)', watt: 0 }
-];
+import { FinalReportTab } from './components/FinalReportTab';
+
+
 
 // ملاحظة: تم إزالة INVERTER_PRESETS والاعتماد المباشر على invertersData
 // ==========================================
 // 🔋 مكوّن حاسبة البطاريات والأسلاك والقاطع المحدث
 // ==========================================
-function BatteryCalculator({ darkMode, totalDailyWh, maxInverterWatt = 3000 }) {
+export function BatteryCalculator({ darkMode, totalDailyWh, maxInverterWatt = 3000 }) {
   const [systemVoltage, setSystemVoltage] = useState(24);
   const [batteryType, setBatteryType] = useState('lithium');
   const [singleBatteryAh, setSingleBatteryAh] = useState(200); // سعة البطارية الواحدة
@@ -287,451 +281,7 @@ function BatteryCalculator({ darkMode, totalDailyWh, maxInverterWatt = 3000 }) {
     </div>
   );
 }
-// ==========================================
-// 🏢 المكوّن الجامع لمركز الحاسبات (Calculators Hub)
-// ==========================================
-function CalculatorsHub({ 
-  darkMode, deviceList, setDeviceList
- }) { 
-  const COMMON_PANEL_WATTAGES = [50, 100, 150, 200, 300, 350, 400, 450, 540, 580, 650];
-  const [hubTab, setHubTab] = useState('loads');
 
- 
-  const [activeTab, setActiveTab] = useState('inverter'); // 'loads' | 'panels' | 'inverter'  //
-  
-  //  ☀️ 1. حالات حاسبة الألواح الجديدة (داخلية)
-  const [dailyConsumption, setDailyConsumption] = useState('');
-  const [panelPower, setPanelPower] = useState('550');
-
-  // ☀️ 2. حساب نتائج الألواح تلقائياً
-  const panelResults = useMemo(() => {
-    const consumption = parseFloat(dailyConsumption) || 0;
-    const singlePanelWatt = parseFloat(panelPower) || 1;
-    const sunHours = 4.5; // معدل ساعات الشمس الفعلية
-
-    if (consumption <= 0) {
-      return { totalPowerNeeded: '0 W', panelsCount: '0 ألواح', note: null };
-    }
-
-    const totalWattsNeeded = Math.ceil((consumption / sunHours) * 1.3);
-    const count = Math.ceil(totalWattsNeeded / singlePanelWatt);
-
-    return {
-      totalPowerNeeded: `${totalWattsNeeded} W`,
-      panelsCount: `${count} ألواح`,
-      note: `تستند الحسابات إلى معدل ${sunHours} ساعات شمس فعلياً مع نسبة فقد كفاءة 30%.`
-    };
-  }, [dailyConsumption, panelPower]);
-
-  // حالات النموذج لإضافة جهاز جديد
-  const [selectedPreset, setSelectedPreset] = useState(PRESET_DEVICES[0].name);
-  const [deviceName, setDeviceName] = useState(PRESET_DEVICES[0].name);
-  const [deviceWatt, setDeviceWatt] = useState(PRESET_DEVICES[0].watt.toString());
-  const [deviceQty, setDeviceQty] = useState('1');
-  const [deviceHours, setDeviceHours] = useState('8');
-
-  // عند تغيير خيار القائمة المنسدلة
-  const handleDropdownChange = (e) => {
-    const selectedName = e.target.value;
-    setSelectedPreset(selectedName);
-
-    const preset = PRESET_DEVICES.find(d => d.name === selectedName);
-    if (preset) {
-      setDeviceName(preset.name);
-      setDeviceWatt(preset.watt > 0 ? preset.watt.toString() : '');
-    }
-  };
-
-  // إضافة الجهاز للجدول
-    const handleAddDevice = () => {
-    const w = parseFloat(deviceWatt) || 0;
-    const q = parseInt(deviceQty) || 1;
-    const h = parseFloat(deviceHours) || 0;
-
-    if (!deviceName.trim() || w <= 0) {
-      alert('يرجى تأكيد اسم الجهاز وقدرة الواط بشكل صحيح.');
-      return;
-    }
-
-    const newItem = {
-      id: Date.now(),
-      name: deviceName,
-      watt: w,
-      qty: q,
-      hours: h,
-    };
-
-    setDeviceList([...deviceList, newItem]);
-  };
-
-  // حذف جهاز من الجدول
-  const handleDeleteDevice = (id) => {
-    setDeviceList(deviceList.filter(item => item.id !== id));
-  };
-
-  // تفريغ الجدول
-  const handleClearTable = () => {
-    setDeviceList([]);
-  };
-  
-    // دالة تصدير الجدول إلى PDF
-  const exportToPDF = async () => {
-    const input = document.getElementById('devices-table-container');
-    if (!input) return;
-
-    const canvas = await html2canvas(input, { scale: 2 });
-    const imgData = canvas.toDataURL('image/png');
-    
-    const pdf = new jsPDF('p', 'mm', 'a4');
-    const imgWidth = 210; // عرض صفحة A4 بالمليمتر
-    const imgHeight = (canvas.height * imgWidth) / canvas.width;
-    
-    pdf.addImage(imgData, 'PNG', 0, 10, imgWidth, imgHeight);
-    pdf.save('جدول_أجهزة_الطاقة_الشمسية.pdf');
-  };
-
-  // حساب الإجمالي اليومي لجميع الأجهزة بالـ Wh و kWh
-  const totalDailyWh = deviceList.reduce((acc, item) => acc + (item.watt * item.qty * item.hours), 0);
-  const totalDailyKwh = (totalDailyWh / 1000).toFixed(2);
-
-  return (
-    <div className="space-y-6">
-      
-      {/* شريط التنقل الداخلي */}
-      <div className={`p-1.5 rounded-2xl flex gap-1.5 border transition-colors ${
-        darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'
-      }`}>
-        <button
-          onClick={() => setHubTab('loads')}
-          className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
-            hubTab === 'loads'
-              ? 'bg-amber-500 text-slate-950 shadow-md'
-              : darkMode ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'
-          }`}
-        >
-          <Gauge className="w-3.5 h-3.5" />
-          حاسبة الأحمال
-        </button>
-
-        <button
-          onClick={() => setHubTab('battery')}
-          className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
-            hubTab === 'battery'
-              ? 'bg-indigo-600 text-white shadow-md'
-              : darkMode ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'
-          }`}
-        >
-          <BatteryCharging className="w-3.5 h-3.5" />
-          حاسبة البطاريات
-        </button>
-
-        <button
-          onClick={() => setHubTab('wires')}
-          className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
-            hubTab === 'wires'
-              ? 'bg-rose-600 text-white shadow-md'
-              : darkMode ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'
-          }`}
-        >
-          <Wrench className="w-3.5 h-3.5" />
-          حاسبة الألواح الشمسية
-        </button>
-      </div>
-
-      {/* 1. حاسبة الأحمال بقائمة منسدلة وجدول تفاعلي */}
-      {hubTab === 'loads' && (
-        <div className={`p-5 sm:p-6 rounded-2xl border shadow-sm space-y-6 transition-colors ${
-          darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'
-        }`}>
-          <div className={`flex items-center justify-between pb-4 border-b ${darkMode ? 'border-slate-800' : 'border-slate-100'}`}>
-            <div className="flex items-center gap-2.5">
-              <div className="p-2 bg-amber-500/10 text-amber-500 rounded-xl">
-                <Gauge className="w-5 h-5" />
-              </div>
-              <div>
-                <h3 className="font-bold text-base">حاسبة الأحمال والإنتاج اليومي</h3>
-                <p className="text-[11px] opacity-60">اختر الجهاز، حدد الكمية وساعات التشغيل، ثم اضغط إضافة للجدول</p>
-              </div>
-            </div>
-            <span className={`text-[10px] font-bold px-2.5 py-1 rounded-md ${darkMode ? 'bg-slate-800 text-slate-400' : 'bg-slate-100 text-slate-600'}`}>1️⃣ الاستهلاك</span>
-          </div>
-
-          {/* 📋 نموذج إدخال الجهاز */}
-          <div className={`p-4 rounded-xl border space-y-4 ${
-            darkMode ? 'bg-slate-950/60 border-slate-800' : 'bg-slate-50/70 border-slate-200'
-          }`}>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              
-              {/* القائمة المنسدلة */}
-              <div className="space-y-1">
-                <label className="text-xs font-bold opacity-80 block">1. اختر الجهاز من القائمة:</label>
-                <select
-                  value={selectedPreset}
-                  onChange={handleDropdownChange}
-                  className={`w-full p-2.5 rounded-xl text-xs font-semibold border outline-none cursor-pointer ${
-                    darkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-slate-200 text-slate-800'
-                  }`}
-                >
-                  {PRESET_DEVICES.map((item, idx) => (
-                    <option key={idx} value={item.name}>
-                      {item.name} {item.watt > 0 ? `(${item.watt} واط)` : ''}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* اسم الجهاز */}
-              <div className="space-y-1">
-                <label className="text-xs font-bold opacity-80 block">اسم الجهاز في الجدول:</label>
-                <input
-                  type="text"
-                  value={deviceName}
-                  onChange={(e) => setDeviceName(e.target.value)}
-                  placeholder="مثال: تلفزيون الصالة"
-                  className={`w-full p-2.5 rounded-xl text-xs font-semibold border outline-none ${
-                    darkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-slate-200 text-slate-800'
-                  }`}
-                />
-              </div>
-
-            </div>
-
-            <div className="grid grid-cols-3 gap-3">
-              {/* قدرة السحب */}
-              <div className="space-y-1">
-                <label className="text-xs font-bold opacity-80 block">القدرة (واط - W):</label>
-                <input
-                  type="number"
-                  value={deviceWatt}
-                  onChange={(e) => setDeviceWatt(e.target.value)}
-                  placeholder="150"
-                  className={`w-full p-2.5 rounded-xl text-xs font-semibold border outline-none ${
-                    darkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-slate-200 text-slate-800'
-                  }`}
-                />
-              </div>
-
-              {/* العدد */}
-              <div className="space-y-1">
-                <label className="text-xs font-bold opacity-80 block">العدد:</label>
-                <input
-                  type="number"
-                  value={deviceQty}
-                  onChange={(e) => setDeviceQty(e.target.value)}
-                  placeholder="1"
-                  className={`w-full p-2.5 rounded-xl text-xs font-semibold border outline-none ${
-                    darkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-slate-200 text-slate-800'
-                  }`}
-                />
-              </div>
-
-              {/* ساعات التشغيل */}
-              <div className="space-y-1">
-                <label className="text-xs font-bold opacity-80 block">ساعات التشغيل:</label>
-                <input
-                  type="number"
-                  value={deviceHours}
-                  onChange={(e) => setDeviceHours(e.target.value)}
-                  placeholder="8"
-                  className={`w-full p-2.5 rounded-xl text-xs font-semibold border outline-none ${
-                    darkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-slate-200 text-slate-800'
-                  }`}
-                />
-              </div>
-            </div>
-
-            <button
-              onClick={handleAddDevice}
-              className="w-full py-2.5 px-4 bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-xs rounded-xl flex items-center justify-center gap-2 transition-all shadow-md cursor-pointer"
-            >
-              <Plus className="w-4 h-4 stroke-[3]" />
-              إضافة الجهاز إلى الجدول
-            </button>
-          </div>
-
-          {/* 📊 جدول الأجهزة المضافة */}
-<div className="space-y-3">
-  <div className="flex items-center justify-between gap-2 flex-wrap">
-    <h4 className="text-xs font-bold opacity-90 flex items-center gap-1.5">
-      <span>📋 الأجهزة المضافة</span>
-      <span className="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-500 text-[10px]">
-        {deviceList.length} أجهزة
-      </span>
-    </h4>
-
-    {deviceList.length > 0 && (
-      <div className="flex items-center gap-2">
-        {/* 📥 زر تصدير PDF */}
-        <button
-          onClick={exportToPDF}
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-bold rounded-xl transition-all shadow-md active:scale-95 cursor-pointer"
-        >
-          <FileText className="w-3.5 h-3.5" />
-          <span>تصدير PDF</span>
-        </button>
-
-        {/* 🔄 زر مسح الجدول */}
-        <button
-          onClick={handleClearTable}
-          className="text-[11px] font-bold text-rose-500 hover:bg-rose-500/10 px-2 py-1.5 rounded-lg transition-all flex items-center gap-1 cursor-pointer"
-        >
-          <RotateCcw className="w-3 h-3" />
-          <span>مسح الجدول</span>
-        </button>
-      </div>
-    )}
-  </div>
-
-  {/* حاوية الجدول المخصصة للتصدير */}
-  <div id="devices-table-container" className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800">
-    <table className="w-full text-right text-xs">
-      <thead className={`text-[11px] font-extrabold border-b ${
-        darkMode ? 'bg-slate-800/80 border-slate-700 text-slate-300' : 'bg-slate-100 border-slate-200 text-slate-700'
-      }`}>
-        <tr>
-          <th className="p-3">اسم الجهاز</th>
-          <th className="p-3 text-center">القدرة (واط)</th>
-          <th className="p-3 text-center">العدد</th>
-          <th className="p-3 text-center">ساعات التشغيل</th>
-          <th className="p-3 text-center">الاستهلاك (Wh)</th>
-          <th className="p-3 text-center">إجراء</th>
-        </tr>
-      </thead>
-      <tbody className={`divide-y ${darkMode ? 'divide-slate-800' : 'divide-slate-100'}`}>
-        {deviceList.length > 0 ? (
-          deviceList.map((item) => {
-            const itemWh = item.watt * item.qty * item.hours;
-            return (
-              <tr key={item.id} className={`transition-colors ${
-                darkMode ? 'hover:bg-slate-800/40' : 'hover:bg-slate-50'
-              }`}>
-                <td className="p-3 font-bold">{item.name}</td>
-                <td className="p-3 text-center font-semibold text-amber-500">{item.watt} W</td>
-                <td className="p-3 text-center font-medium">{item.qty}</td>
-                <td className="p-3 text-center font-medium">{item.hours} ساعة</td>
-                <td className="p-3 text-center font-bold text-indigo-400">{itemWh.toLocaleString()} Wh</td>
-                <td className="p-3 text-center">
-                  <button
-                    onClick={() => handleDeleteDevice(item.id)}
-                    className="p-1 text-rose-500 hover:bg-rose-500/10 rounded-lg transition-colors cursor-pointer"
-                    title="حذف الجهاز"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </td>
-              </tr>
-            );
-          })
-        ) : (
-          <tr>
-            <td colSpan={6} className="p-6 text-center text-slate-400 font-medium">
-              لم يتم إضافة أي أجهزة بعد. قم بإضافة أجهزة من الأعلى لحساب أحمالك.
-            </td>
-          </tr>
-        )}
-      </tbody>
-    </table>
-  </div>
-</div>
-
-          {/* 💰 إجمالي الاستهلاك اليومي */}
-          <div className={`p-4 rounded-xl border text-center ${darkMode ? 'bg-amber-500/10 border-amber-500/20 text-amber-300' : 'bg-amber-50 border-amber-200 text-amber-950'}`}>
-            <span className="block text-xs font-bold opacity-80">إجمالي الطاقة اليومية المطلوبة لكافة الأجهزة:</span>
-            <div className="flex items-baseline justify-center gap-2 mt-1">
-              <span className="text-2xl sm:text-3xl font-black">{totalDailyWh.toLocaleString()}</span>
-              <span className="text-xs font-bold">واط.ساعة (Wh)</span>
-              <span className="text-xs opacity-60">({totalDailyKwh} kWh)</span>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* 2. حاسبة البطاريات المحدثة */}
-      {hubTab === 'battery' && (
-        <BatteryCalculator darkMode={darkMode} totalDailyWh={totalDailyWh} />
-      )}
-
-     {/* 3. حاسبة الألواح الشمسية */}
-      {hubTab === 'wires' && (
-        <div className={`p-5 sm:p-6 rounded-2xl border shadow-sm space-y-5 transition-colors ${
-          darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'
-        }`}>
-          <div className={`flex items-center justify-between pb-4 border-b ${darkMode ? 'border-slate-800' : 'border-slate-100'}`}>
-            <div className="flex items-center gap-2.5">
-              <div className="p-2 bg-amber-500/10 text-amber-500 rounded-xl">
-                <Sun className="w-5 h-5" />
-              </div>
-              <h3 className="font-bold 18px">حاسبة الألواح الشمسية</h3>
-            </div>
-            <span className={`text-[15px] font-bold px-2 py-1 rounded-md ${darkMode ? 'bg-slate-800 text-slate-400' : 'bg-slate-100 text-slate-600'}`}>☀️ التوليد</span>
-          </div>
-
-          <div className="space-y-4">
-            <div>
-              <label className="block text-xs font-bold mb-1.5 opacity-80">إجمالي الاستهلاك اليومي (وات/ساعة - Wh):</label>
-              <input 
-                type="number" 
-                value={dailyConsumption}
-                onChange={(e) => setDailyConsumption(e.target.value)}
-                placeholder="مثال: 5000" 
-                className={`w-full p-3 rounded-xl text-sm font-semibold border outline-none transition-all ${
-                  darkMode ? 'bg-slate-800/80 border-slate-700 text-white focus:border-amber-500' : 'bg-slate-50 border-slate-200 text-slate-800 focus:bg-white focus:ring-2 focus:ring-amber-500'
-                }`}
-              />
-            </div>
-
-            </div>
-
-         <div className="mb-3">
-        <label htmlFor="panelPower" className="form-label">
-          قدرة اللوح الواحد (واط - Watt):
-        </label>
-       <select 
-          id="panelPower"
-          value={panelPower || ''} 
-          onChange={(e) => setPanelPower(Number(e.target.value))}
-          className="form-control form-select"
-          style={{
-            color: '#0d6efd', // 👈 تغيير لون النص/الرقم هنا (مثال: أزرق)
-            fontWeight: 'bold', // يجعل الرقم عريضاً إذا أردت
-            backgroundPosition: 'left 0.75rem center',
-            textAlign: 'right'
-          }}
-        >
-          <option value="">اختر قدرة اللوح...</option>
-          {(COMMON_PANEL_WATTAGES || [100, 150, 200, 250, 300, 350, 400, 450, 500, 540, 550, 580, 650]).map((watt) => (
-            <option key={watt} value={watt}>
-              {watt}
-            </option>
-          ))}
-        </select>
-      </div>
-          <div className="space-y-2 pt-2">
-            <div className="grid grid-cols-2 gap-2">
-              <div className={`p-3 rounded-xl border ${darkMode ? 'bg-amber-500/10 border-amber-500/20 text-amber-300' : 'bg-amber-50 border-amber-200 text-amber-950'}`}>
-                <span className="block text-[11px] font-bold opacity-80">القدرة المطلوبة الكلية:</span>
-                <span className="text-base font-extrabold">{panelResults.totalPowerNeeded}</span>
-              </div>
-
-              <div className={`p-3 rounded-xl border ${darkMode ? 'bg-sky-500/10 border-sky-500/20 text-sky-300' : 'bg-sky-50 border-sky-200 text-sky-950'}`}>
-                <span className="block text-[11px] font-bold opacity-80">عدد الألواح المقترح:</span>
-                <span className="text-base font-extrabold">{panelResults.panelsCount}</span>
-              </div>
-            </div>
-            {panelResults.note && (
-              <p className="text-[11px] text-amber-500 font-medium p-2 rounded-lg bg-amber-500/10 border border-amber-500/20">
-                💡 {panelResults.note}
-              </p>
-            )}
-
-          </div>
-        </div>
-        )}
-      
-    
-      </div>
-      
-)}
 // ==========================================
 // ⚙️ 3️⃣ مكوّن ضبط الإنفرتر (مع نقل قائمة المصطلحات فوق كرت المصطلح المختار)
 // ==========================================
@@ -1563,12 +1113,7 @@ function MainApp() {
                     {openTerm === 'mono_panel' && (
                       <div className={`p-4 border-t space-y-3 ${darkMode ? 'border-slate-800 bg-slate-950/50' : 'border-slate-100 bg-slate-50'}`}>
                         <div className={`p-3 rounded-lg border text-center ${darkMode ? 'bg-slate-950 border-slate-800' : 'bg-white border-slate-200'}`}>
-                          <img 
-                          src="./assets/img/image_mono_panel.png" 
-                          alt="اللوح أحادي التبلور" 
-                          onError={(e) => handleImageError(e, "صورة اللوح أحادي التبلور Mono")} 
-                          className="w-full h-auto max-h-56 object-contain rounded-md" 
-                        />
+                          <img src="./assets/img/image_mono_panel.png" alt="اللوح أحادي التبلور" onError={(e) => handleImageError(e, "صورة اللوح أحادي التبلور Mono")} className="w-full h-auto max-h-56 object-contain rounded-md" />
                         </div>
                         <div className={`p-3 rounded-lg text-xs sm:text-sm flex items-center gap-2.5 ${darkMode ? 'bg-slate-800 text-slate-200 border border-slate-700' : 'bg-slate-100 text-slate-900'}`}>
                           <Lightbulb className="w-5 h-5 text-amber-500 shrink-0" />
@@ -1590,11 +1135,7 @@ function MainApp() {
                     {openTerm === 'poly_panel' && (
                       <div className={`p-4 border-t space-y-3 ${darkMode ? 'border-slate-800 bg-blue-950/20' : 'border-slate-100 bg-blue-50/20'}`}>
                         <div className={`p-3 rounded-lg border text-center ${darkMode ? 'bg-slate-950 border-slate-800' : 'bg-white border-blue-200'}`}>
-                          <img src="./assets/img/image_poly_panel.png"
-                          alt="اللوح متعدد التبلور"
-                          onError={(e) => handleImageError(e, "صورة اللوح متعدد التبلور Poly")}
-                          className="w-full h-auto max-h-56 object-contain rounded-md"
-                        />
+                          <img src="./assets/img/image_poly_panel.png" alt="اللوح متعدد التبلور" onError={(e) => handleImageError(e, "صورة اللوح متعدد التبلور Poly")} className="w-full h-auto max-h-56 object-contain rounded-md" />
                         </div>
                         <div className={`p-3 rounded-lg text-xs sm:text-sm flex items-center gap-2.5 ${darkMode ? 'bg-blue-950/50 text-blue-200 border border-blue-800/40' : 'bg-blue-100/60 text-blue-900'}`}>
                           <Lightbulb className="w-5 h-5 text-blue-500 shrink-0" />
