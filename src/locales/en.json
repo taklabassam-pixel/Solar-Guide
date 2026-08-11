@@ -1,0 +1,90 @@
+{
+  "app_title": "SolarFlow Pro",
+  "main_app": {
+    "app_subtitle": "Your Comprehensive Guide for Solar System Design & Setup",
+    "version_tag": "v1.0 Simple & User Friendly",
+    "tabs": {
+      "guide": "Beginners Guide",
+      "tools": "Calculators Hub",
+      "inverter": "Inverter Settings"
+    },
+    "default_devices": {
+      "fridge": "Home Refrigerator (150W)",
+      "led": "LED Light (10W)"
+    },
+    "theme": {
+      "dark": "Dark Mode",
+      "light": "Light Mode"
+    },
+    "guide": {
+      "basic_concepts_title": "Basic Concepts",
+      "batteries_section_title": "Solar Battery Types",
+      "panels_section_title": "Solar Panel Types",
+      "analogy_label": "Simple Analogy",
+      "practical_tip_label": "Practical Tip",
+      "safety_rule_label": "Safety Rule",
+      "concept_label": "Key Concept",
+      "explanation_label": "Explanation & Detail",
+      "voltage": {
+        "title": "Voltage",
+        "unit": "Volt",
+        "img_alt": "Voltage Diagram",
+        "analogy": "Like water pressure in a pipe; higher pressure pushes electricity stronger.",
+        "practical_tip": "Select system voltage (12V, 24V, or 48V) based on system size to minimize loss."
+      },
+      "current": {
+        "title": "Electric Current",
+        "unit": "Ampere",
+        "img_alt": "Current Diagram",
+        "analogy": "Like the actual volume of water flowing through the pipe per second.",
+        "safety_rule": "High current requires thicker cables to prevent overheating and fire risks."
+      },
+      "power": {
+        "title": "Electrical Power",
+        "unit": "Watt",
+        "img_alt": "Power Diagram",
+        "concept": "Voltage multiplied by Current (Power = Voltage × Current)."
+      },
+      "batteries": {
+        "acid": {
+          "name": "Flooded Lead-Acid Batteries",
+          "tag": "Traditional - Requires Maintenance",
+          "img_alt": "Flooded Lead-Acid Battery",
+          "desc": "Uses liquid electrolyte and requires regular distilled water refilling. Lower initial cost, but shorter lifespan and maximum 50% recommended depth of discharge."
+        },
+        "gel": {
+          "name": "Gel / AGM Batteries (Sealed)",
+          "tag": "Sealed - Maintenance Free",
+          "img_alt": "Sealed Gel Battery",
+          "desc": "Sealed, leak-proof batteries requiring zero maintenance. Ideal for medium home setups with a recommended 50% depth of discharge."
+        },
+        "lithium": {
+          "name": "Lithium Iron Phosphate (LiFePO4)",
+          "tag": "Latest & Most Efficient ⚡",
+          "img_alt": "Lithium Solar Battery",
+          "desc": "The top choice for modern systems; features extremely long lifespan (3500+ cycles), rapid charging, and safe discharge depth up to 80%-90%."
+        }
+      },
+      "panels": {
+        "mono": {
+          "name": "Monocrystalline Panels",
+          "tag": "Highest Efficiency 🌟",
+          "img_alt": "Monocrystalline Panel",
+          "desc": "Features a dark black uniform look with top efficiency. Ideal for limited roof spaces and areas with weaker sunlight conditions."
+        },
+        "poly": {
+          "name": "Polycrystalline Panels",
+          "tag": "Budget Friendly 💰",
+          "img_alt": "Polycrystalline Panel",
+          "desc": "Recognizable by its blue speckled look. Offers good performance at a lower cost, best suited for larger spaces and average budgets."
+        },
+        "flexible": {
+          "name": "Flexible & Lightweight Panels",
+          "tag": "Bendable & Portable 🛹",
+          "img_alt": "Flexible Solar Panel",
+          "desc": "Ultra-thin and bendable solar panels, perfect for curved surfaces, RVs, and mobile applications. Easy to carry but has a shorter lifespan."
+        }
+      }
+    }
+  }
+}
