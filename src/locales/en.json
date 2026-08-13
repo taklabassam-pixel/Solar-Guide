@@ -86,5 +86,297 @@
         }
       }
     }
+  },
+  "solar_panels_calc": {
+    "header_title": "Solar Panels Calculator",
+    "header_subtitle": "Calculate array capacity and required panel count to cover loads",
+    "badge_tag": "Step 2",
+    "daily_consumption_label": "Total Daily Consumption (Watt-hour - Wh):",
+    "fetch_calculated": "Fetch calculated load ({{val}} Wh)",
+    "placeholder_consumption": "Enter daily consumption e.g. 5000",
+    "single_panel_watt_label": "Available Single Panel Rating (Watts):",
+    "total_required_power": "Total Required Capacity:",
+    "suggested_panels_count": "Recommended Panels:",
+    "panels_unit": "{{count}} panels",
+    "note_text": "Calculations based on an average of {{sunHours}} peak sun hours daily and 30% system losses."
+  },
+  "calculators_hub": {
+    "tabs": {
+      "loads": "Loads Calculator",
+      "panels": "Panels Calculator",
+      "batteries": "Battery Calculator",
+      "report": "Full Report"
+    },
+    "presets": {
+      "led": "LED Lighting",
+      "tv": "TV / Monitor",
+      "fan": "Fan",
+      "fridge": "Refrigerator",
+      "freezer": "Freezer",
+      "ac_inverter": "AC (Inverter)",
+      "router": "Wi-Fi Router",
+      "laptop": "Laptop",
+      "water_pump": "Water Pump",
+      "custom": "Custom Device"
+    },
+    "alerts": {
+      "invalid_input": "Please enter valid device details"
+    },
+    "loads": {
+      "header_title": "Electrical Loads Calculator",
+      "header_subtitle": "Add devices to calculate total consumption",
+      "step_tag": "Step 1",
+      "select_preset_label": "Select Preset Device",
+      "device_name_label": "Device Name",
+      "device_name_placeholder": "Enter device name",
+      "watt_label": "Power (Watt)",
+      "qty_label": "Quantity",
+      "hours_label": "Hours",
+      "add_button": "Add Device",
+      "table_title": "Added Devices List",
+      "clear_table": "Clear All",
+      "total_summary_label": "Total Expected Daily Consumption"
+    },
+  "battery_calc": {
+      "header_title": "Battery, Wire & Breaker Calculator",
+      "header_subtitle": "Calculate battery bank capacity, quantity, cable size, and breaker specs",
+      "daily_consumption_label": "Total Daily Consumption:",
+      "no_consumption_warning": "⚠️ No loads set, calculations are based on default values",
+      "type_label": "Battery Type",
+      "system_voltage_label": "System Voltage",
+      "single_voltage_label": "Single Battery Voltage",
+      "single_ah_label": "Single Battery Capacity (Ah):",
+      "opt_ah_100": "100 Ah",
+      "opt_ah_150": "150 Ah",
+      "opt_ah_200": "200 Ah (Default)",
+      "opt_ah_300": "300 Ah",
+      "cable_distance_label": "Cable Distance to Inverter (m)",
+      "opt_acid": "Flooded Lead-Acid",
+      "opt_gel": "Gel / AGM",
+      "opt_lithium": "Lithium (LiFePO4)",
+      "opt_sys_12": "12 Volts",
+      "opt_sys_24": "24 Volts",
+      "opt_sys_48": "48 Volts",
+      "opt_bat_6": "6 Volts",
+      "opt_bat_12": "12 Volts",
+      "bank_details_title": "Battery Bank Summary",
+      "summary_type": "Battery Type",
+      "type_acid_name": "Flooded Lead-Acid",
+      "type_gel_name": "Gel / AGM",
+      "type_lithium_name": "Lithium (LiFePO4)",
+      "summary_count": "Required Quantity",
+      "count_unit": "{{count}} Batteries",
+      "summary_capacity": "Total Capacity",
+      "summary_voltage": "Bank Voltage",
+      "conn_series": "Series Connection ({{seriesCount}} batteries to reach {{systemVoltage}}V)",
+      "conn_parallel": "Parallel Connection ({{requiredParallel}} batteries to increase capacity)",
+      "protection_title": "Protection & Wiring Specs",
+      "max_current": "Max Estimated Current",
+      "max_current_sub": "At maximum inverter load",
+      "breaker_needed": "Required Breaker",
+      "breaker_sub": "DC Circuit Breaker",
+      "min_cable": "Min Recommended Cable Size",
+      "cable_sub": "For distance of {{length}} meters",
+      "safety_warning": "⚡ Warning: Always use heavy-duty copper cables and dedicated DC breakers to protect the system.",
+      "connection_method_title": "Recommended Connection Method:",
+      "conn_single": "Single Battery Only",
+      "conn_single_reason": "A single battery is sufficient to cover system capacity and required voltage without additional wiring.",
+      "conn_mixed": "in Series and {{chains}} in Parallel (Hybrid)",
+      "conn_mixed_reason": "{{series}} connected in series to reach {{voltage}}V system voltage, combined with {{chains}} in parallel to meet required total capacity ({{capacity}} Ah).",
+      "conn_series_only": "Series Connection ({{series}})",
+      "conn_series_reason": "Connected in series to step up voltage from {{singleVoltage}}V to the required system voltage ({{voltage}}V) while maintaining constant battery capacity.",
+      "conn_parallel_only": "Parallel Connection ({{chains}})",
+      "conn_parallel_reason": "Connected in parallel to double the total capacity to {{capacity}} Ah for load coverage, keeping bank voltage identical to system voltage ({{voltage}}V).",
+        "types": {
+          "gel": "Gel / AGM (50% DOD)",
+          "acid": "Flooded Lead-Acid (50% DOD)",
+          "lithium": "Lithium LiFePO4 (80% DOD)"
+        }
+      },
+    "report": {
+      "header_title": "Comprehensive System Technical Report",
+      "header_subtitle": "Full detailed summary of all solar system calculations and specs",
+      "empty_warning": "⚠️ No devices added yet. Please enter loads in the Loads Calculator to generate the report.",
+      "sec_loads": "1. Electrical Loads & Appliance Breakdown",
+      "sec_panels": "2. Solar Array Calculations & Specs",
+      "sec_batteries": "3. Battery Bank & Connection Details",
+      "sec_protection": "4. Wiring & Protection Specifications (DC)",
+      "col_device": "Device Name",
+      "col_power": "Power (W)",
+      "col_qty": "Qty",
+      "col_hours": "Hours",
+      "col_energy": "Consumption (Wh)",
+      "total_daily_wh": "Total Daily Consumption:",
+      "required_array_watt": "Required Array Capacity:",
+      "recommended_panels_count": "Recommended Panels Count ({{panelWatt}}W Panel):",
+      "sun_hours_note": "Based on {{sunHours}} peak sun hours/day and 30% system loss factor.",
+      "battery_type": "Battery Type:",
+      "battery_count": "Required Batteries Count:",
+      "total_capacity": "Total Capacity:",
+      "bank_voltage": "Bank Voltage:",
+      "connection_method": "Suggested Connection Method:",
+      "max_current": "Max Estimated Current:",
+      "recommended_cable": "Min Recommended Cable Size (Copper):",
+      "recommended_breaker": "Required DC Circuit Breaker:",
+      "sec_inverter": "5. Recommended Inverter Parameters & Settings",
+      "inverter_brand": "Inverter Model/Type:",
+      "system_voltage_label": "DC System Voltage:",
+      "max_pv_input": "Max PV Input Power:",
+      "charge_current": "Max Charging Current:",
+      "cutoff_voltage": "Low DC Cut-off Voltage:",
+      "bulk_voltage": "Bulk/Absorption Voltage:",
+      "float_voltage": "Float Voltage:",
+      "footer_notice": "This report was automatically generated by SolarFlow Pro based on engineering calculations and standards for off-grid solar systems.",
+      "print_button": "Print / Save PDF Report"
+    }
+  },
+   "units": {
+      "watt_short": "W",
+      "watt": "Watts",
+      "hours_short": "hrs",
+      "watt_hour": "Wh",
+      "kilo_watt_hour": "kWh",
+      "ampere_hour": "Ah",
+      "ampere": "A",
+      "volt": "V",
+      "millimetr_squared": "mm²"
+    },
+    "table": {
+      "col_name": "Device Name",
+      "col_watt": "Power",
+      "col_qty": "Quantity",
+      "col_hours": "Operating Hours",
+      "col_consumption": "Consumption",
+      "col_action": "Action",
+      "empty_state": "No devices added yet"
+    },
+    "inverter_tab": {
+    "sections": {
+      "inverter_settings": {
+        "header_title": "Recommended Inverter Parameters & Settings",
+        "header_subtitle": "Off-grid inverter charging and voltage cut-off parameters",
+        "inverter_brand": "Inverter Model/Type",
+        "inverter_brand_val": "Off-Grid Inverter",
+        "system_voltage": "DC System Voltage",
+        "max_charge_current": "Max Charging Current",
+        "cutoff_voltage": "Low DC Cut-off Voltage",
+        "bulk_voltage": "Bulk/Absorption Voltage",
+        "float_voltage": "Float Voltage"
+    },
+    
+      "glossary": "Inverter Terms Glossary"
+    },
+    "settings": {
+      "01": {
+        "name": "Output Source Priority",
+        "desc": "Configures power source priority for connected loads (SBU, SUB, SOL, UTI)."
+      },
+      "02": {
+        "name": "Maximum Charging Current",
+        "desc": "Total maximum charging current combined from solar PV and utility grid/generator."
+      },
+      "03": {
+        "name": "AC Input Voltage Range",
+        "desc": "Sets input AC voltage range acceptance: APL (Appliance mode/Generators) or UPS (sensitive electronics)."
+      },
+      "05": {
+        "name": "Battery Type",
+        "desc": "Selects battery chemistry type: Lithium (Li), User-Defined (USE), AGM, or GEL."
+      },
+      "06": {
+        "name": "Auto Restart When Overload Occurs",
+        "desc": "Enables or disables automatic system restart when an overload event happens."
+      },
+      "07": {
+        "name": "Auto Restart When Overtemperature Occurs",
+        "desc": "Enables or disables automatic restart once inverter cools down from overtemperature."
+      },
+      "09": {
+        "name": "Output Frequency",
+        "desc": "Sets the grid/inverter output AC frequency (50Hz or 60Hz)."
+      },
+      "10": {
+        "name": "Output Voltage",
+        "desc": "Sets the nominal AC output voltage (220V, 230V, or 240V)."
+      },
+      "11": {
+        "name": "Maximum Utility Charge Current",
+        "desc": "Maximum charging current supplied from utility grid or AC generator only."
+      },
+      "12": {
+        "name": "Setting Voltage Point Back to Utility",
+        "desc": "Battery voltage threshold to automatically switch load power back to the grid/utility."
+      },
+      "13": {
+        "name": "Setting Voltage Point Back to Battery",
+        "desc": "Battery voltage threshold to switch back to battery discharge mode after recharging."
+      },
+      "16": {
+        "name": "Charger Source Priority",
+        "desc": "Configures charger priority: Solar first (CSO), Solar & Utility (SNU), or Solar only (OSO)."
+      },
+      "18": {
+        "name": "Alarm Control",
+        "desc": "Turns the audible buzzer/beeper alarm on or off."
+      },
+      "19": {
+        "name": "Auto Return to Default Display",
+        "desc": "Automatically reverts LCD display screen back to primary default screen after inactivity."
+      },
+      "20": {
+        "name": "Backlight Control",
+        "desc": "Enables LCD display backlight to stay continuously ON or turn off after inactivity."
+      },
+      "22": {
+        "name": "Beep When Primary Source Interrupts",
+        "desc": "Enables alarm beep notification when primary power source is interrupted."
+      },
+      "23": {
+        "name": "Overload Bypass",
+        "desc": "Enables switching to utility power automatically when unit suffers an AC overload."
+      },
+      "26": {
+        "name": "Bulk Charging Voltage (C.V)",
+        "desc": "Target constant voltage for fast charging phase (Bulk/Absorption)."
+      },
+      "27": {
+        "name": "Floating Charging Voltage",
+        "desc": "Maintenance float voltage to keep battery fully charged without overcharging."
+      },
+      "29": {
+        "name": "Low DC Cut-off Voltage",
+        "desc": "Low battery voltage threshold at which inverter disconnects output to prevent deep discharge."
+      },
+      "30": {
+        "name": "Battery Equalization",
+        "desc": "Enables or disables periodic battery equalization charge mode."
+      }
+    
+  },
+    "labels": {
+      "system_voltage": "System Voltage:",
+      "battery_type": "Battery Type:",
+      "search": "Search Parameter:"
+    },
+    "options": {
+      "v12": "12 Volt",
+      "v24": "24 Volt",
+      "v48": "48 Volt",
+      "lithium": "Lithium (LiFePO4)",
+      "acid": "Lead-Acid",
+      "gel": "Gel / AGM"
+    },
+    "placeholders": {
+      "search": "Search setting number or name..."
+    },
+    "filter_essential": "Show essential settings only",
+    "no_results": "No parameters match the current search filters",
+    "glossary": {
+      "cutoff": {
+        "term": "Low DC Cut-off Voltage",
+        "category": "Battery Protection"
+      }
+    }
   }
 }
+  

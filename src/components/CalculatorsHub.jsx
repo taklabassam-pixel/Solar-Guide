@@ -1,19 +1,44 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Gauge, Sun, BatteryCharging, FileText, Plus, Trash2, RotateCcw } from 'lucide-react';
+import { Gauge, Sun, BatteryCharging, FileText, Plus, Trash2, RotateCcw} from 'lucide-react';
+
+// 1. استيراد الحاسبات الفرعية من مصادرها الصحيحة
+import { BatteryCalculator } from './BatteryCalculator'; 
+import { SolarPanelsCalculator } from './SolarPanelsCalculator';
+import { FinalReportTab } from './FinalReportTab';
+// استيراد بيانات الإنفرترات من ملف البيانات
+import invertersData from '../data/invertersData';
+
+// استيراد مكون تبويب الإنفرتر
+import { InverterSettingsTab } from './InverterSettingsTab';
 
 export function CalculatorsHub({ 
   darkMode, 
   deviceList = [], 
   setDeviceList = () => {},
-  currentLang
-}) { 
+  currentLang,
+  onBatteryConfigChange = () => {} // 👈 إعطاء قيمة افتراضية تمنع الـ ReferenceError
+}) {
+
   const { t, i18n } = useTranslation();
 
-  // تحديد الاتجاه واللغة النشطة بدقة
   const activeLang = currentLang || i18n.language || 'ar';
   const isRtl = activeLang === 'ar';
 
+  const [maxInverterWatt, setMaxInverterWatt] = useState(3000);
+
+  // 🟢 حفظ تكوين البطارية للتقرير الشامل
+const [batteryConfig, setBatteryConfig] = useState({});
+const [inverterConfig, setInverterConfig] = useState(null);
+const [panelsConfig, setPanelsConfig] = useState({});
+
+
+// 🟢 الدالة المسؤولة عن استقبال التحديثات من BatteryCalculator
+const handleBatteryConfigChange = (config) => {
+  setBatteryConfig(config);
+}
+
+  
   const [hubTab, setHubTab] = useState('loads');
   const [deviceName, setDeviceName] = useState('');
   const [deviceWatt, setDeviceWatt] = useState('');
@@ -21,7 +46,6 @@ export function CalculatorsHub({
   const [deviceHours, setDeviceHours] = useState(8);
   const [selectedPreset, setSelectedPreset] = useState('custom');
 
-  // قائمة الأجهزة
   const PRESET_DEVICES = [
     { id: 'led', key: 'led', name: t('calculators_hub.presets.led', 'إضاءة LED'), watt: 10 },
     { id: 'tv', key: 'tv', name: t('calculators_hub.presets.tv', 'تلفزيون'), watt: 80 },
@@ -39,7 +63,7 @@ export function CalculatorsHub({
     const selectedVal = e.target.value;
     setSelectedPreset(selectedVal);
 
-    const preset = PRESET_DEVICES.find(d => d.id === selectedVal);
+      const preset = PRESET_DEVICES.find(d => d.id === selectedVal);
     if (preset) {
       setDeviceName(preset.name);
       setDeviceWatt(preset.watt > 0 ? preset.watt.toString() : '');
@@ -83,6 +107,13 @@ export function CalculatorsHub({
 
   const totalDailyWh = deviceList.reduce((acc, item) => acc + (item.watt * item.qty * item.hours), 0);
   const totalDailyKwh = (totalDailyWh / 1000).toFixed(2);
+
+  const [batteryType, setBatteryType] = useState('lithium');
+  const [systemVoltage, setSystemVoltage] = useState(24);
+  const [singleBatteryVoltage, setSingleBatteryVoltage] = useState(12);
+  const [singleBatteryAh, setSingleBatteryAh] = useState(200);
+
+  const [selectedPanelPower, setSelectedPanelPower] = useState(550);
 
   return (
     <div className="space-y-6" dir={isRtl ? 'rtl' : 'ltr'}>
@@ -240,14 +271,14 @@ export function CalculatorsHub({
 
             <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800">
               <table className="w-full text-xs">
-                <thead className={`text-[11px] font-extrabold border-b ${darkMode ? 'bg-slate-800/80 border-slate-700 text-slate-300' : 'bg-slate-100 border-slate-200 text-slate-700'}`}>
-                  <tr>
-                    <th className={`p-3 ${isRtl ? 'text-right' : 'text-left'}`}>{t('calculators_hub.table.col_name', 'اسم الجهاز')}</th>
-                    <th className="p-3 text-center">{t('calculators_hub.table.col_watt', 'القدرة')}</th>
-                    <th className="p-3 text-center">{t('calculators_hub.table.col_qty', 'العدد')}</th>
-                    <th className="p-3 text-center">{t('calculators_hub.table.col_hours', 'ساعات التشغيل')}</th>
-                    <th className="p-3 text-center">{t('calculators_hub.table.col_consumption', 'الاستهلاك')}</th>
-                    <th className="p-3 text-center">{t('calculators_hub.table.col_action', 'إجراء')}</th>
+                <thead>
+                  <tr className="border-b opacity-70">
+                    <th className="py-2 px-2 text-left">  {t('calculators_hub.table.col_name', 'Device Name')}</th>
+                    <th className="py-2 px-2 text-center">{t('calculators_hub.table.col_watt', 'Power')}</th>
+                    <th className="py-2 px-2 text-center">{t('calculators_hub.table.col_qty', 'Qty')}</th>
+                    <th className="py-2 px-2 text-center">{t('calculators_hub.table.col_hours', 'Operating Hours')}</th>
+                    <th className="py-2 px-2 text-center">{t('calculators_hub.table.col_consumption', 'Consumption')}</th>
+                    <th className="py-2 px-2 text-center">{t('calculators_hub.table.col_action', 'Action')}</th>
                   </tr>
                 </thead>
                 <tbody className={`divide-y ${darkMode ? 'divide-slate-800' : 'divide-slate-100'}`}>
@@ -295,6 +326,55 @@ export function CalculatorsHub({
             </div>
           </div>
         </div>
+      )}
+
+      {/* 2️⃣ تبويب حاسبة الألواح */}
+      {hubTab === 'panels' && (
+        <SolarPanelsCalculator 
+          darkMode={darkMode}
+          totalDailyWh={totalDailyWh}
+          currentLang={activeLang}
+          panelPower={selectedPanelPower}
+          onPanelPowerChange={setSelectedPanelPower}
+        />
+      )}
+
+      {/* 3️⃣ تبويب حاسبة البطاريات */}
+      {hubTab === 'battery' && (
+        <BatteryCalculator 
+          darkMode={darkMode}
+          totalDailyWh={totalDailyWh}
+          maxInverterWatt={maxInverterWatt}
+          batteryType={batteryType}
+          onBatteryTypeChange={setBatteryType}
+          systemVoltage={systemVoltage}
+          onSystemVoltageChange={setSystemVoltage}
+          singleBatteryVoltage={singleBatteryVoltage}
+          onSingleBatteryVoltageChange={setSingleBatteryVoltage}
+          singleBatteryAh={singleBatteryAh}
+          onSingleBatteryAhChange={setSingleBatteryAh}
+          onBatteryConfigChange={handleBatteryConfigChange}
+        />
+      )}
+
+      {/* 4️⃣ التقرير الشامل */}
+      {hubTab === 'report' && (
+        <FinalReportTab 
+          darkMode={darkMode}
+          deviceList={deviceList}
+          totalDailyWh={totalDailyWh}
+          panelsConfig={panelsConfig}
+          batteryConfig={batteryConfig} // 👈 إرسال بيانات البطارية المخزنة للتقرير
+          inverterConfig={inverterConfig}
+        />
+      )}
+
+      {/* تبويب إعدادات الإنفرتر */}
+      {hubTab === 'inverter' && (
+        <InverterTab 
+          darkMode={darkMode} 
+          invertersData={invertersData} 
+        />
       )}
     </div>
   );

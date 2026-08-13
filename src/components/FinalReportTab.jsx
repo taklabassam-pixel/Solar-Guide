@@ -1,222 +1,237 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { 
-  FileCheck, 
-  Printer, 
-  Zap, 
-  Battery, 
-  Sun, 
-  Sliders, 
-  CheckCircle2 
-} from 'lucide-react';
+import { FileText, Tv, Sun, Battery, ShieldAlert, Settings, Printer, CheckCircle2 } from 'lucide-react';
+
+// 🔹 المعطيات الافتراضية المطابقة تماماً لصور الحاسبات الثلاث
+const DEFAULT_LOADS = {
+  deviceList: [
+    { name: 'Home Refrigerator (150W)', watt: 150, qty: 1, hours: 24 },
+    { name: 'LED Light (10W)', watt: 10, qty: 5, hours: 6 }
+  ]
+};
+
+const DEFAULT_PANELS = {
+  requiredWatt: 1127,
+  panelWatt: 550,
+  count: 3
+};
+
+const DEFAULT_BATTERY = {
+  type: 'Lithium (LiFePO4)',
+  count: 2,
+  maxCurrent: '47 A',
+  breaker: '63 A DC',
+  cableSize: '16 mm²'
+};
+
+const DEFAULT_INVERTER = {
+  brand: 'Off-Grid Inverter',
+  systemVoltage: '24 V',
+  maxChargeCurrent: '30 A',
+  cutoffVoltage: '21.0 V',
+  bulkVoltage: '28.4 V',
+  floatVoltage: '27.0 V'
+};
 
 export function FinalReportTab({ 
-  darkMode = true,
-  deviceList = [],
-  batteryData = {},
-  panelData = {},
-  inverterParams = [],
-  inverterBrand = 'Lightwave (Hybrid)'
+  darkMode = true, 
+  deviceList = DEFAULT_LOADS.deviceList, 
+  totalDailyWh,
+  panelsConfig = {},
+  batteryConfig = {},
+  inverterConfig = {}
 }) {
-  const { t, i18n } = useTranslation();
+  const { t, i18n } = useTranslation(undefined, { keyPrefix: 'calculators_hub.report' });
 
-  // حسابات إجمالي الأحمال
-  const totalDailyWh = deviceList.reduce((acc, item) => acc + (item.watt * item.qty * item.hours), 0);
-  const totalPeakWatt = deviceList.reduce((acc, item) => acc + (item.watt * item.qty), 0);
-  const totalDailyKwh = (totalDailyWh / 1000).toFixed(2);
+  // 🛡️ استخدام القائمة الممررة أو القائمة الافتراضية
+  const currentDeviceList = deviceList && deviceList.length > 0 ? deviceList : DEFAULT_LOADS.deviceList;
 
-  // التعامل مع الطباعة
-  const handlePrint = () => {
-    window.print();
-  };
+  // 🛡️ حساب إجمالي الاستهلاك اليومي بأمان
+  const calculatedTotalDailyWh = totalDailyWh ?? currentDeviceList.reduce((acc, item) => acc + (item.watt * item.qty * item.hours), 0);
+  const totalKwh = (calculatedTotalDailyWh / 1000).toFixed(2);
+
+  // 🛡️ دمج الكائنات الممررة مع المعطيات الافتراضية للصور
+  const panels = { ...DEFAULT_PANELS, ...(panelsConfig || {}) };
+  const battery = { ...DEFAULT_BATTERY, ...(batteryConfig || {}) };
+  const inverter = { ...DEFAULT_INVERTER, ...(inverterConfig || {}) };
 
   return (
-    <div className="space-y-6 ltr:text-left rtl:text-right" dir={i18n.dir()}>
-      
-      {/* 🖨️ شريط رأس التقرير وأزرار الإجراءات */}
-      <div className={`p-5 rounded-2xl border flex flex-col sm:flex-row items-center justify-between gap-4 transition-colors ${
-        darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'
-      }`}>
+    <div className={`p-4 sm:p-6 rounded-2xl border space-y-6 ${
+      darkMode ? 'bg-slate-900 border-slate-800 text-slate-100' : 'bg-white border-slate-200 text-slate-800'
+    }`}>
+      {/* الهيدر الأكبر للتقرير */}
+      <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-slate-800">
         <div className="flex items-center gap-3">
-          <div className="p-3 bg-emerald-500/10 text-emerald-500 rounded-xl">
-            <FileCheck className="w-6 h-6" />
+          <div className="p-2.5 bg-emerald-500/10 text-emerald-500 rounded-xl">
+            <FileText className="w-5 h-5" />
           </div>
           <div>
-            <h2 className="text-lg font-bold">{t('final_report.header_title')}</h2>
-            <p className="text-xs opacity-70">{t('final_report.header_subtitle')}</p>
+            <h2 className="text-sm sm:text-base font-extrabold">{t('header_title', 'التقرير الفني الشامل للمنظومة')}</h2>
+            <p className="text-[11px] opacity-60">{t('header_subtitle', 'ملخص كامل ومفصل لجميع نصوص وحسابات المنظومة الشمسية')}</p>
           </div>
         </div>
 
         <button
-          onClick={handlePrint}
-          className="w-full sm:w-auto px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-2 transition-all shadow-md active:scale-95 cursor-pointer"
+          type="button"
+          onClick={() => window.print()}
+          className="px-3 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl flex items-center gap-2 cursor-pointer shadow-md print:hidden transition-all"
         >
           <Printer className="w-4 h-4" />
-          <span>{t('final_report.print_button')}</span>
+          <span className="hidden sm:inline">{t('print_button', 'طباعة / حفظ التقرير PDF')}</span>
         </button>
       </div>
 
-      {/* 📄 حاوي التقرير المخصص للطباعة والعرض */}
-      <div id="final-summary-report" className={`p-6 sm:p-8 rounded-2xl border space-y-8 transition-colors ${
-        darkMode ? 'bg-slate-900 border-slate-800 text-slate-100' : 'bg-white border-slate-200 text-slate-900 shadow-sm'
-      }`}>
+      {/* 1️⃣ جدول الأحمال */}
+      <div className={`p-4 rounded-xl border space-y-3 ${darkMode ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
+        <h3 className="text-xs font-bold text-amber-500 flex items-center gap-2 border-b pb-2 dark:border-slate-800 border-slate-200">
+          <Tv className="w-4 h-4" />
+          {t('sec_loads', '1. جدول الأحمال والأجهزة الكهربائية')}
+        </h3>
 
-        {/* 1️⃣ ملخص الأحمال والقدرة */}
-        <section className="space-y-3">
-          <div className="flex items-center gap-2 text-amber-500 pb-2 border-b border-slate-700/40">
-            <Zap className="w-5 h-5" />
-            <h3 className="font-extrabold text-base">{t('final_report.loads.title')}</h3>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div className={`p-3.5 rounded-xl border ${darkMode ? 'bg-slate-950/60 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
-              <span className="block text-[11px] opacity-70 font-semibold">{t('final_report.loads.total_daily')}</span>
-              <span className="text-lg font-black text-amber-500">{totalDailyWh.toLocaleString()} {t('calculators_hub.units.wh')}</span>
-              <span className="text-xs opacity-50 block">({totalDailyKwh} {t('calculators_hub.units.kwh_per_day')})</span>
-            </div>
-
-            <div className={`p-3.5 rounded-xl border ${darkMode ? 'bg-slate-950/60 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
-              <span className="block text-[11px] opacity-70 font-semibold">{t('final_report.loads.peak_power')}</span>
-              <span className="text-lg font-black text-amber-500">{totalPeakWatt.toLocaleString()} {t('calculators_hub.units.watt_short')}</span>
-              <span className="text-xs opacity-50 block">{t('final_report.loads.peak_note')}</span>
-            </div>
-
-            <div className={`p-3.5 rounded-xl border ${darkMode ? 'bg-slate-950/60 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
-              <span className="block text-[11px] opacity-70 font-semibold">{t('final_report.loads.devices_count')}</span>
-              <span className="text-lg font-black text-amber-500">{t('calculators_hub.loads.device_count', { count: deviceList.length })}</span>
-              <span className="text-xs opacity-50 block">{t('final_report.loads.detailed_note')}</span>
-            </div>
-          </div>
-        </section>
-
-        {/* 2️⃣ تصميم بنك البطاريات والتوصيل */}
-        <section className="space-y-3">
-          <div className="flex items-center gap-2 text-blue-500 pb-2 border-b border-slate-700/40">
-            <Battery className="w-5 h-5" />
-            <h3 className="font-extrabold text-base">{t('final_report.battery.title')}</h3>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
-            <div className={`p-3 rounded-xl border ${darkMode ? 'bg-slate-950/60 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
-              <span className="block text-[11px] opacity-70 font-semibold">{t('final_report.battery.type')}</span>
-              <span className="text-sm font-bold text-blue-400">{batteryData.type || t('final_report.battery.default_type')}</span>
-            </div>
-
-            <div className={`p-3 rounded-xl border ${darkMode ? 'bg-slate-950/60 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
-              <span className="block text-[11px] opacity-70 font-semibold">{t('final_report.battery.count')}</span>
-              <span className="text-sm font-bold text-blue-400">{batteryData.count || t('final_report.battery.default_count')}</span>
-            </div>
-
-            <div className={`p-3 rounded-xl border ${darkMode ? 'bg-slate-950/60 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
-              <span className="block text-[11px] opacity-70 font-semibold">{t('final_report.battery.cable_size')}</span>
-              <span className="text-sm font-bold text-blue-400">{batteryData.cableSize || '25 mm²'}</span>
-            </div>
-
-            <div className={`p-3 rounded-xl border ${darkMode ? 'bg-slate-950/60 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
-              <span className="block text-[11px] opacity-70 font-semibold">{t('final_report.battery.breaker')}</span>
-              <span className="text-sm font-bold text-blue-400">{batteryData.breaker || '190 A'}</span>
-            </div>
-          </div>
-        </section>
-
-        {/* 3️⃣ حقل الألواح الشمسية */}
-        <section className="space-y-3">
-          <div className="flex items-center gap-2 text-emerald-500 pb-2 border-b border-slate-700/40">
-            <Sun className="w-5 h-5" />
-            <h3 className="font-extrabold text-base">{t('final_report.panels.title')}</h3>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-center">
-            <div className={`p-3 rounded-xl border ${darkMode ? 'bg-slate-950/60 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
-              <span className="block text-[11px] opacity-70 font-semibold">{t('final_report.panels.total_power')}</span>
-              <span className="text-sm font-bold text-emerald-400">{panelData.totalWatt || '1,127 W'}</span>
-            </div>
-
-            <div className={`p-3 rounded-xl border ${darkMode ? 'bg-slate-950/60 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
-              <span className="block text-[11px] opacity-70 font-semibold">{t('final_report.panels.single_watt')}</span>
-              <span className="text-sm font-bold text-emerald-400">{panelData.singlePanelWatt || '550 W'}</span>
-            </div>
-
-            <div className={`p-3 rounded-xl border ${darkMode ? 'bg-slate-950/60 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
-              <span className="block text-[11px] opacity-70 font-semibold">{t('final_report.panels.count')}</span>
-              <span className="text-sm font-bold text-emerald-400">{panelData.panelsCount || t('final_report.panels.default_count')}</span>
-            </div>
-          </div>
-        </section>
-
-        {/* 4️⃣ جدول بارامترات ضبط الإنفرتر */}
-        <section className="space-y-3">
-          <div className="flex items-center justify-between pb-2 border-b border-slate-700/40">
-            <div className="flex items-center gap-2 text-indigo-400">
-              <Sliders className="w-5 h-5" />
-              <h3 className="font-extrabold text-base">{t('final_report.inverter.title')}</h3>
-            </div>
-            <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
-              {inverterBrand}
-            </span>
-          </div>
-
-          <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800">
-            <table className="w-full ltr:text-left rtl:text-right text-xs">
-              <thead className={`text-[11px] font-extrabold border-b ${
-                darkMode ? 'bg-slate-800/80 text-slate-300 border-slate-700' : 'bg-slate-100 text-slate-700 border-slate-200'
-              }`}>
-                <tr>
-                  <th className="p-2.5 text-center">{t('final_report.inverter.table.col_code')}</th>
-                  <th className="p-2.5">{t('final_report.inverter.table.col_name')}</th>
-                  <th className="p-2.5 text-center">{t('final_report.inverter.table.col_value')}</th>
-                  <th className="p-2.5">{t('final_report.inverter.table.col_notes')}</th>
+        <div className="overflow-x-auto">
+          <table className="w-full text-right text-xs">
+            <thead>
+              <tr className="border-b dark:border-slate-800 border-slate-200 opacity-70">
+                <th className="py-2 px-2">{t('col_device', 'اسم الجهاز')}</th>
+                <th className="py-2 px-2 text-center">{t('col_power', 'القدرة (واط)')}</th>
+                <th className="py-2 px-2 text-center">{t('col_qty', 'العدد')}</th>
+                <th className="py-2 px-2 text-center">{t('col_hours', 'ساعات التشغيل')}</th>
+                <th className="py-2 px-2 text-left">{t('col_energy', 'الاستهلاك (واط.ساعة)')}</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y dark:divide-slate-800/60 divide-slate-200">
+              {currentDeviceList.map((dev, idx) => (
+                <tr key={idx} className="hover:bg-slate-500/5">
+                  <td className="py-2 px-2 font-semibold">{dev.name}</td>
+                  <td className="py-2 px-2 text-center">{dev.watt} W</td>
+                  <td className="py-2 px-2 text-center">{dev.qty}</td>
+                  <td className="py-2 px-2 text-center">{dev.hours} h</td>
+                  <td className="py-2 px-2 text-left font-bold text-amber-400">
+                    {(dev.watt * dev.qty * dev.hours).toLocaleString()} Wh
+                  </td>
                 </tr>
-              </thead>
-              <tbody className={`divide-y ${darkMode ? 'divide-slate-800' : 'divide-slate-100'}`}>
-                {inverterParams.length > 0 ? (
-                  inverterParams.map((param, idx) => (
-                    <tr key={idx} className={darkMode ? 'hover:bg-slate-800/30' : 'hover:bg-slate-50'}>
-                      <td className="p-2.5 text-center font-extrabold text-indigo-400">#{param.code}</td>
-                      <td className="p-2.5 font-bold">{param.title}</td>
-                      <td className="p-2.5 text-center font-black text-emerald-500">{param.value}</td>
-                      <td className="p-2.5 opacity-80 text-[11px]">{param.description}</td>
-                    </tr>
-                  ))
-                ) : (
-                  <>
-                    <tr className={darkMode ? 'hover:bg-slate-800/30' : 'hover:bg-slate-50'}>
-                      <td className="p-2.5 text-center font-extrabold text-indigo-400">#01</td>
-                      <td className="p-2.5 font-bold">Output Source Priority</td>
-                      <td className="p-2.5 text-center font-black text-emerald-500">SBU / SUB</td>
-                      <td className="p-2.5 opacity-80 text-[11px]">{t('final_report.inverter.defaults.param_01')}</td>
-                    </tr>
-                    <tr className={darkMode ? 'hover:bg-slate-800/30' : 'hover:bg-slate-50'}>
-                      <td className="p-2.5 text-center font-extrabold text-indigo-400">#05</td>
-                      <td className="p-2.5 font-bold">Battery Type</td>
-                      <td className="p-2.5 text-center font-black text-emerald-500">USE / LIB</td>
-                      <td className="p-2.5 opacity-80 text-[11px]">{t('final_report.inverter.defaults.param_05')}</td>
-                    </tr>
-                    <tr className={darkMode ? 'hover:bg-slate-800/30' : 'hover:bg-slate-50'}>
-                      <td className="p-2.5 text-center font-extrabold text-indigo-400">#26</td>
-                      <td className="p-2.5 font-bold">Bulk Charging Voltage</td>
-                      <td className="p-2.5 text-center font-black text-emerald-500">28.2 V</td>
-                      <td className="p-2.5 opacity-80 text-[11px]">{t('final_report.inverter.defaults.param_26')}</td>
-                    </tr>
-                  </>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        {/* 📜 ترويسة التوقيع والإشعار الفني */}
-        <div className={`p-4 rounded-xl border text-xs leading-relaxed flex items-center justify-between flex-wrap gap-3 ${
-          darkMode ? 'bg-slate-950/80 border-slate-800 text-slate-400' : 'bg-slate-50 border-slate-200 text-slate-600'
-        }`}>
-          <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
-            <span>{t('final_report.footer_notice')}</span>
-          </div>
-          <span className="font-semibold">{new Date().toLocaleDateString(i18n.language === 'ar' ? 'ar-EG' : 'en-US')}</span>
+              ))}
+            </tbody>
+          </table>
         </div>
 
+        <div className="flex justify-between items-center pt-2 text-xs border-t dark:border-slate-800 border-slate-200">
+          <span className="font-bold opacity-80">{t('total_daily_wh', 'إجمالي الاستهلاك اليومي:')}</span>
+          <span className="font-extrabold text-amber-500 text-sm">
+            {Math.round(calculatedTotalDailyWh).toLocaleString()} Wh ({totalKwh} kWh)
+          </span>
+        </div>
       </div>
+
+      {/* 2️⃣ حاسبة الألواح */}
+      <div className={`p-4 rounded-xl border space-y-3 ${darkMode ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
+        <h3 className="text-xs font-bold text-amber-400 flex items-center gap-2 border-b pb-2 dark:border-slate-800 border-slate-200">
+          <Sun className="w-4 h-4" />
+          {t('sec_panels', '2. حسابات ومواصفات الألواح الشمسية')}
+        </h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+          <div className="flex justify-between p-2.5 rounded-lg bg-slate-900/50 border dark:border-slate-800/80">
+            <span className="opacity-70">{t('required_array_watt', 'قدرة مصفوفة الألواح المطلوبة:')}</span>
+            <span className="font-bold text-amber-400">{panels.requiredWatt} W</span>
+          </div>
+          <div className="flex justify-between p-2.5 rounded-lg bg-slate-900/50 border dark:border-slate-800/80">
+            <span className="opacity-70">{t('recommended_panels_count', `عدد الألواح الموصى به:`, { panelWatt: panels.panelWatt })}</span>
+            <span className="font-extrabold text-emerald-400">{panels.count}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* 3️⃣ بنك البطاريات */}
+      <div className={`p-4 rounded-xl border space-y-3 ${darkMode ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
+        <h3 className="text-xs font-bold text-indigo-400 flex items-center gap-2 border-b pb-2 dark:border-slate-800 border-slate-200">
+          <Battery className="w-4 h-4" />
+          {t('sec_batteries', '3. تفاصيل بنك البطاريات والتوصيل')}
+        </h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+          <div className="flex justify-between p-2.5 rounded-lg bg-slate-900/50 border dark:border-slate-800/80">
+            <span className="opacity-70">{t('battery_type', 'نوع البطارية:')}</span>
+            <span className="font-bold">{battery.type}</span>
+          </div>
+          <div className="flex justify-between p-2.5 rounded-lg bg-slate-900/50 border dark:border-slate-800/80">
+            <span className="opacity-70">{t('battery_count', 'عدد البطاريات المطلوبة:')}</span>
+            <span className="font-extrabold text-amber-500">{battery.count}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* 4️⃣ الأسلاك والقواطع */}
+      <div className={`p-4 rounded-xl border space-y-3 ${darkMode ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
+        <h3 className="text-xs font-bold text-emerald-400 flex items-center gap-2 border-b pb-2 dark:border-slate-800 border-slate-200">
+          <ShieldAlert className="w-4 h-4" />
+          {t('sec_protection', '4. مواصفات الأسلاك والقواطع (DC)')}
+        </h3>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+          <div className="flex flex-col p-2.5 rounded-lg bg-slate-900/50 border dark:border-slate-800/80 text-center">
+            <span className="opacity-70 mb-1">{t('max_current', 'أقصى تيار متوقع:')}</span>
+            <span className="font-bold text-slate-200">{battery.maxCurrent}</span>
+          </div>
+          <div className="flex flex-col p-2.5 rounded-lg bg-slate-900/50 border dark:border-slate-800/80 text-center">
+            <span className="opacity-70 mb-1">{t('recommended_breaker', 'قاطع الحماية المطلوب:')}</span>
+            <span className="font-extrabold text-rose-400">{battery.breaker}</span>
+          </div>
+          <div className="flex flex-col p-2.5 rounded-lg bg-slate-900/50 border dark:border-slate-800/80 text-center">
+            <span className="opacity-70 mb-1">{t('recommended_cable', 'أقل سمك كابل موصى به:')}</span>
+            <span className="font-extrabold text-amber-400">{battery.cableSize}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* 5️⃣ برامترات ضبط الإنفرتر */}
+      <div className={`p-4 rounded-xl border space-y-3 ${darkMode ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
+        <h3 className="text-xs font-bold text-blue-400 flex items-center gap-2 border-b pb-2 dark:border-slate-800 border-slate-200">
+          <Settings className="w-4 h-4" />
+          {t('sec_inverter', '5. إعدادات ومعلمات ضبط الإنفرتر المقترحة')}
+        </h3>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
+          <div className="flex justify-between p-2.5 rounded-lg bg-slate-900/50 border dark:border-slate-800/80">
+            <span className="opacity-70">{t('inverter_brand', 'الإنفرتر:')}</span>
+            <span className="font-bold text-blue-400">{inverter.brand}</span>
+          </div>
+
+          <div className="flex justify-between p-2.5 rounded-lg bg-slate-900/50 border dark:border-slate-800/80">
+            <span className="opacity-70">{t('system_voltage_label', 'جهد المنظومة:')}</span>
+            <span className="font-bold">{inverter.systemVoltage}</span>
+          </div>
+
+          <div className="flex justify-between p-2.5 rounded-lg bg-slate-900/50 border dark:border-slate-800/80">
+            <span className="opacity-70">{t('charge_current', 'تيار الشحن:')}</span>
+            <span className="font-bold text-emerald-400">{inverter.maxChargeCurrent}</span>
+          </div>
+
+          <div className="flex justify-between p-2.5 rounded-lg bg-slate-900/50 border dark:border-slate-800/80">
+            <span className="opacity-70">{t('cutoff_voltage', 'جهد القطع (Cut-off):')}</span>
+            <span className="font-bold text-rose-400">{inverter.cutoffVoltage}</span>
+          </div>
+
+          <div className="flex justify-between p-2.5 rounded-lg bg-slate-900/50 border dark:border-slate-800/80">
+            <span className="opacity-70">{t('bulk_voltage', 'جهد الـ Bulk:')}</span>
+            <span className="font-bold text-amber-400">{inverter.bulkVoltage}</span>
+          </div>
+
+          <div className="flex justify-between p-2.5 rounded-lg bg-slate-900/50 border dark:border-slate-800/80">
+            <span className="opacity-70">{t('float_voltage', 'جهد الـ Float:')}</span>
+            <span className="font-bold text-indigo-400">{inverter.floatVoltage}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* 📜 ترويسة التوقيع والإشعار الفني */}
+      <div className={`p-4 rounded-xl border text-xs leading-relaxed flex items-center justify-between flex-wrap gap-3 ${
+        darkMode ? 'bg-slate-950/80 border-slate-800 text-slate-400' : 'bg-slate-50 border-slate-200 text-slate-600'
+      }`}>
+        <div className="flex items-center gap-2">
+          <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+          <span>{t('footer_notice', 'تم توليد هذا التقرير تلقائياً بواسطة SolarFlow Pro استناداً إلى الحسابات والمعايير الهندسية للمنظومات الشمسية المستقلة (Off-Grid).')}</span>
+        </div>
+        <span className="font-semibold">{new Date().toLocaleDateString(i18n?.language === 'ar' ? 'ar-EG' : 'en-US')}</span>
+      </div>
+
     </div>
   );
 }
