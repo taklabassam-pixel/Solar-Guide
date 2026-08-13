@@ -2,7 +2,7 @@
   "app_title": "SolarFlow Pro",
   "main_app": {
     "app_subtitle": "Your Comprehensive Guide for Solar System Design & Setup",
-    "version_tag": "v1.0 Simple & User Friendly",
+    "version_tag": "SFPro-v1.0",
     "tabs": {
       "guide": "Beginners Guide",
       "tools": "Calculators Hub",
